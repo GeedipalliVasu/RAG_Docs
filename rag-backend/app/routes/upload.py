@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 import os
 
 from app.ingestion.pdf_parser import extract_text_from_pdf
+from app.ingestion.chunker import chunk_text
 
 router = APIRouter()
 
@@ -22,7 +23,10 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     extracted_text = extract_text_from_pdf(file_path)
 
+    chunks=chunk_text(extracted_text)
+
     return {
         "filename": file.filename,
-        "text_preview": extracted_text[:1000]
+        "text_preview": extracted_text[:1000],
+        "sample_chunk": chunks[0]
     }

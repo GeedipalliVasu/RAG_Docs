@@ -36,5 +36,4 @@ async def upload_pdf(file: UploadFile = File(...)):
         "text_preview": extracted_text[:1000],
         "sample_chunk": chunks[0],
         "embedding_dimension": embeddings.shape[1],
-        "faiss_vectors":index.ntotal
     }

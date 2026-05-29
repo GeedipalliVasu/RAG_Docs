@@ -5,6 +5,8 @@ from app.ingestion.pdf_parser import extract_text_from_pdf
 from app.ingestion.chunker import chunk_text
 from app.retrieval.embedder import generate_embeddings
 from app.retrieval.vector_store import create_faiss_index
+from app.retrieval.retriever import similar_search_chunks
+from app.retrieval.embedder import model
 
 router = APIRouter()
 
@@ -31,10 +33,12 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     index = create_faiss_index(embeddings)
 
+    query = "What is this document about?"
+
+    results=similar_search_chunks(query,model,index,chunks)
     return {
         "filename": file.filename,
-        "text_preview": extracted_text[:1000],
-        "sample_chunk": chunks[0],
-        "embedding_dimension": embeddings.shape[1],
-        "faiss_vectors":index.ntotal
+        "total_chunks":len(chunks),
+        "faiss_vectors":index.ntotal,
+        "retrieved_chunks":results
     }

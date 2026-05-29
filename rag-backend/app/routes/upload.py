@@ -7,6 +7,7 @@ from app.retrieval.embedder import generate_embeddings
 from app.retrieval.vector_store import create_faiss_index
 from app.retrieval.retriever import similar_search_chunks
 from app.retrieval.embedder import model
+from app.retrieval.bm25_retriever import create_bm25_index, bm25_search
 
 router = APIRouter()
 
@@ -29,6 +30,8 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     chunks=chunk_text(extracted_text)
 
+    bm25=create_bm25_index(chunks)
+
     embeddings = generate_embeddings(chunks)
 
     index = create_faiss_index(embeddings)
@@ -36,9 +39,13 @@ async def upload_pdf(file: UploadFile = File(...)):
     query = "What is this document about?"
 
     results=similar_search_chunks(query,model,index,chunks)
+
+    bm25_results=bm25_search(query,bm25,chunks)
+
     return {
         "filename": file.filename,
         "total_chunks":len(chunks),
         "faiss_vectors":index.ntotal,
-        "retrieved_chunks":results
+        "semantic_results":results,
+        "bm25_results":bm25_results
     }

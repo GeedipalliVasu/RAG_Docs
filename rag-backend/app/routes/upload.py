@@ -8,6 +8,7 @@ from app.retrieval.vector_store import create_faiss_index
 from app.retrieval.retriever import similar_search_chunks
 from app.retrieval.embedder import model
 from app.retrieval.bm25_retriever import create_bm25_index, bm25_search
+from app.reranking.reranker import rerank_chunks
 
 router = APIRouter()
 
@@ -42,10 +43,15 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     bm25_results=bm25_search(query,bm25,chunks)
 
+    combined_results=list(set(results+bm_25_results))
+
+    reranked_results=rerank_chunks(query,combined_results)  
+
     return {
         "filename": file.filename,
         "total_chunks":len(chunks),
         "faiss_vectors":index.ntotal,
         "semantic_results":results,
-        "bm25_results":bm25_results
+        "bm25_results":bm25_results,
+        "reranked_results":reranked_results
     }

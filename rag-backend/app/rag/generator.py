@@ -16,6 +16,6 @@ def generate_answer(query,retrieved_chunks):
     Answer:
     """
 
-    response=ollama.chat(model="llama-2-7b",messages=[{"role":"user","content":prompt}])
+    response=ollama.chat(model="qwen2.5:1.5b",messages=[{"role":"user","content":prompt}])
 
     return response['message']['content']

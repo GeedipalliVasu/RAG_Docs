@@ -44,11 +44,11 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     bm25_results=bm25_search(query,bm25,chunks)
 
-    combined_results=list(set(results+bm_25_results))
+    combined_results=list(set(results+bm25_results))
 
     reranked_results=rerank_chunks(query,combined_results)  
 
-    top_chunks=[chunk for chunk,score in ranked_results]
+    top_chunks=[chunk for chunk,score in reranked_results]
 
     final_answer=generate_answer(query,top_chunks)
 
